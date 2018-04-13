@@ -1,0 +1,34 @@
+{
+    "name": "sample-fable-javascript-library",
+    "version": "0.1.0-dev",
+    "license": "MIT",
+    "main": "dist/Exports.js",
+    "types": "dist/Exports.d.ts",
+    "scripts": {
+        "clean": "rm -rf dist/*",
+        "build": "cp -r lib/metadata2 dist/metadata2 ;fable-splitter -c splitter.config.js",
+        "build:test": "fable-splitter -c splitter.config.test.js",
+        "build:test:watch": "run-s \"build:test -w\"",
+        "dev": "run-s \"build -w\"",
+        "dotnet": "cd src && dotnet",
+        "prepublish": "cp src/Import/Exports.d.ts dist",
+        "test": "run-s build:test test:runner",
+        "test:watch": "run-p build:test:watch test:runner:watch",
+        "test:runner": "mocha bin/test",
+        "test:runner:watch": "run-s \"test:runner -w\""
+    },
+    "dependencies": {
+
+        "fable-utils": "^1.0.6"
+    },
+    "devDependencies": {
+        "babel-core": "^6.26.0",
+        "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+        "babel-preset-env": "^1.6.1",
+        "fable-splitter": "^0.1.20",
+        "fable-utils": "^1.0.6",
+        "mocha": "^3.5.3",
+        "npm-run-all": "^4.1.1",
+        "babel-standalone": "6.26.0"
+    }
+}

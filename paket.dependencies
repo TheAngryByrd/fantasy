@@ -1,0 +1,10 @@
+source https://nuget.org/api/v2
+storage:none
+
+clitool dotnet-fable
+nuget Fable.Core
+nuget Fable.Import.Browser
+nuget Fable.PowerPack
+
+github fable-compiler/Fable src/dotnet/Fable.JS/Interfaces.fs
+github fable-compiler/Fable src/dotnet/Fable.JS/Metadata.fs
