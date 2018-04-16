@@ -7,6 +7,10 @@ open Fable.JS.Interfaces
 open Fable.PowerPack
 open Fable.Import
 
+
+[<Emit("__dirname")>]
+let __dirname = jsNative
+
 type IPath =
     abstract join: string * string -> string
     abstract basename: string -> string
@@ -18,6 +22,8 @@ type IPath =
 
 let path: IPath = importAll "path"
 
+let inline (</>) path1 path2 = path.join(path1,path2)
+
 type IFileSystem =
     abstract readFileSync: string -> byte[]
     [<Emit("$0.readFileSync($1,'utf8')")>]
@@ -25,6 +31,8 @@ type IFileSystem =
     abstract writeFileSync: string * obj -> unit
 
 let fs: IFileSystem = importAll "fs"
+
+
 
 let printPairsPadded (leftPad: int) (rightPad: int) (kvs: seq<'a*'b>) =
     kvs |> Seq.map (fun (k, v) ->
@@ -63,7 +71,7 @@ let metadataPath =
     then "metadata/"  // dotnet 4.5 binaries
     else "metadata2/" // dotnet core 2.0 binaries
 
-let readAllBytes = fun (fileName:string) -> fs.readFileSync (metadataPath + fileName)
+let readAllBytes = fun (fileName:string) -> fs.readFileSync (__dirname </> metadataPath </> fileName)
 
 let getChecker = lazy (
     FableREPL.CreateChecker(references, readAllBytes)
