@@ -7,6 +7,7 @@ open Fable.JS.Interfaces
 open Fable.PowerPack
 open Fable.Import
 
+open Yargs
 
 [<Emit("__dirname")>]
 let __dirname = jsNative
@@ -29,16 +30,15 @@ type IFileSystem =
     [<Emit("$0.readFileSync($1,'utf8')")>]
     abstract readTextSync: string -> string
     abstract writeFileSync: string * obj -> unit
+    abstract mkdirSync: string -> unit
 
 let fs: IFileSystem = importAll "fs"
 
+type Imkdirp =
+    abstract sync : string -> unit
 
+let mkdirp : Imkdirp = importAll "mkdirp"
 
-let printPairsPadded (leftPad: int) (rightPad: int) (kvs: seq<'a*'b>) =
-    kvs |> Seq.map (fun (k, v) ->
-        let format = sprintf "{0,-%i}->{1,%i}" leftPad rightPad
-        String.Format(format, k, v))
-    |> String.concat "\n"
 
 [<Fable.Core.Emit("process.hrtime()")>]
 let hrTimeNow(): float[] = failwith "JS only"
@@ -107,17 +107,21 @@ let compiler (content : string) =
 let readAllText (filePath:string) =
     fs.readTextSync(filePath)
 
+
+
 [<EntryPointAttribute>]
 let main argv =
-    let sourceFileName = path.resolve argv.[0] //|> //normalize
+    let args =  argv |> ResizeArray<_> |>  U2.Case2 |> yargs.parse
+    let outputDir =  args.["o"].Value :?> string
+    let file =  args.["f"].Value :?> string
+    let sourceFileName = path.resolve file //|> //normalize
     let source = readAllText sourceFileName
+
+    let outfile = outputDir </> file.Replace("fsx", "js") 
     // let targetFileName = path.resolve argv.[1] |> normalize
     compiler source
     |> fun (codeES2015) ->
         printfn "---codeES2015---"
-        printfn "%s" codeES2015
-    
-
-    
-    
+        outfile |> path.dirname |> mkdirp.sync
+        fs.writeFileSync(outfile,codeES2015)    
     0

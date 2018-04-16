@@ -12,6 +12,7 @@
       <Paket>True</Paket>
       <Link>paket-files/Interfaces.fs</Link>
     </Compile>
+    <Compile Include="Yargs.fs"/>
     <Compile Include="fantasy.fsi" />
     <Compile Include="fantasy.fs" />
   </ItemGroup>
